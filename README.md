@@ -1,6 +1,9 @@
-# Ember-twitter-typeahead
+# ember-twitter-typeahead
 
-This README outlines the details of collaborating on this Ember addon.
+This Ember addon wraps the [typeahead.js](https://github.com/twitter/typeahead.js) library to make it available as
+an extensible component in an Ember application.
+
+# Contributing
 
 ## Installation
 
@@ -13,7 +16,10 @@ This README outlines the details of collaborating on this Ember addon.
 * `ember server`
 * Visit your app at http://localhost:4200.
 
-## Running Tests
+## Tests
+
+Add unit tests that go along with any pull requests made. We are using the Mocha framework for Ember to test
+this addon. To run the tests, use the commands
 
 * `ember test`
 * `ember test --server`
@@ -23,3 +29,9 @@ This README outlines the details of collaborating on this Ember addon.
 * `ember build`
 
 For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+
+# License
+
+Copyright 2015 CRäKN, LLC
+
+Licensed under the MIT License
