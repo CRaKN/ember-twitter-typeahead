@@ -12,6 +12,8 @@ import {
   it
 } from 'ember-mocha';
 
+import Ember from 'ember';
+
 describeComponent(
   'twitter-typeahead',
   'TwitterTypeaheadComponent',
@@ -66,6 +68,88 @@ describeComponent(
 
     });
 
-    
+    describe('#value', function () {
+
+      it('should set the value on the typeahead, when before render', function (done) {
+        component.content = states;
+        component.set('value', 'Iowa');
+
+        this.render();
+
+        Ember.run.next(function () {
+          expect(component.get('$inputElement').typeahead('val')).to.eq('Iowa');
+          done();
+        });
+      });
+
+      it('should set the value on the typeahead, when after render', function (done) {
+        component.content = states;
+
+        this.render();
+
+        Ember.run.next(function () {
+          component.set('value', 'Kentucky');
+
+          Ember.run(function () {
+            expect(component.get('$inputElement').typeahead('val')).to.eq('Kentucky');
+            done();
+          });
+        });
+      });
+
+      it('should set the value on the component when the typeahead value changes', function (done) {
+        component.content = states;
+        this.render();
+
+        Ember.run.next(function () {
+          component.get('$inputElement').typeahead('val', 'Ohio');
+          // Idle will only trigger based on focus state, which does not work well with unit tests.
+          component.get('$inputElement').trigger('typeahead:idle');
+
+          Ember.run(function () {
+            expect(component.get('value')).to.eq('Ohio');
+            done();
+          });
+        });
+      });
+    });
+
+    describe('Class name overrides for Twitter Typeahead', function () {
+      it('should override the input class', function (done) {
+        component.inputClass = 'custom-input-css-class';
+        this.render();
+        Ember.run.next(function () {
+          expect(component.$('.custom-input-css-class').length > 0).to.be.true;
+          done();
+        });
+      });
+
+      it('should override the hint class', function (done) {
+        component.hintClass = 'custom-hint-css-class';
+        this.render();
+        Ember.run.next(function () {
+          expect(component.$('.custom-hint-css-class').length > 0).to.be.true;
+          done();
+        });
+      });
+
+      it('should override the menu class', function (done) {
+        component.menuClass = 'custom-menu-css-class';
+        this.render();
+        Ember.run.next(function () {
+          expect(component.$('.custom-menu-css-class').length > 0).to.be.true;
+          done();
+        });
+      });
+
+      it('should override the dataset class', function (done) {
+        component.datasetClass = 'custom-dataset-css-class';
+        this.render();
+        Ember.run.next(function () {
+          expect(component.$('.custom-dataset-css-class').length > 0).to.be.true;
+          done();
+        });
+      });
+    });
   }
 );
