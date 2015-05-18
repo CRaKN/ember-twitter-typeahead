@@ -20,8 +20,9 @@ export default Ember.Component.extend({
 
   // --- Component class names, also non-bindable -----------------------------
 
-  regexQuery: function (query) {
-    return new RegExp(query, 'i');
+  itemMatchesQuery: function (query, item) {
+    var regexp = new RegExp(query, 'i');
+    return !!(item.match(regexp));
   },
 
   retrieveResults: function (query, syncResultsCallback) {
@@ -29,7 +30,11 @@ export default Ember.Component.extend({
     var content = this.get('content');
 
     if (content) {
-      results = content;
+      Ember.$.each(content, (i, item) => {
+        if (this.itemMatchesQuery(query, item)) {
+          results.push(item);
+        }
+      });
     }
 
     syncResultsCallback(results);

@@ -1,0 +1,1 @@
+export { default } from 'ember-twitter-typeahead/component-tests/twitter-typeahead';
