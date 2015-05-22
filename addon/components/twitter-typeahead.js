@@ -5,31 +5,34 @@ export default Ember.Component.extend({
 
   // --- Component parameters -------------------------------------------------
   content: null,
-
-  /**
-   * @type {String|String.[]}
-   */
   inputClassNames: null,
+  displayKey: null,
 
-  value: Ember.computed({
-    get: function () {
-      var $inputElement = this.get('$inputElement');
-      var value = '';
+  // This is the Ember-style object value
+  value: null,
 
-      if ($inputElement) {
-        value = $inputElement.typeahead('val');
-      }
+  // This is the Typeahead-style string value
+  _valueChanged: function () {
+    let displayValue = this.formatDisplay(this.get('value'));
+    let $inputElement = this.get('$inputElement');
 
-      return value;
-    },
-    set: function (key, value) {
-      var $inputElement = this.get('$inputElement');
-      if ($inputElement) {
-        $inputElement.typeahead('val', value);
-      }
-      return value;
+    if ($inputElement) {
+      $inputElement.typeahead('val', displayValue);
     }
-  }),
+  }.observes('value'),
+
+  clearValue: function () {
+    this.set('lastAutocompleteSuggestion', null);
+    this.set('value', null);
+    this._valueChanged();
+  },
+
+  closeAutocomplete: function () {
+    let $inputElement = this.get('$inputElement');
+    if ($inputElement) {
+      $inputElement.typeahead('close');
+    }
+  },
 
   customEventMap: [
     {
@@ -61,7 +64,7 @@ export default Ember.Component.extend({
       eventName: 'typeahead:select'
     },
     {
-      functionName: 'typeaheadAutoCompleteTriggered',
+      functionName: 'typeaheadAutocompleteTriggered',
       eventName: 'typeahead:autocomplete'
     },
     {
@@ -95,20 +98,33 @@ export default Ember.Component.extend({
   hintClass: null,
   menuClass: null,
   datasetClass: null,
+  suggestionClass: null,
+
+  // --- Component template names, non-bindable -------------------------------
+
+  footerTemplateFunction: null,
+  headerTemplateFunction: null,
+  notFoundTemplateFunction: null,
+  pendingTemplateFunction: null,
+  suggestionTemplateFunction: null,
 
   // --- Component custom events, can use these as hooks ----------------------
 
   typeaheadActiveTriggered: null,
 
   typeaheadIdleTriggered: function () {
-    this.set('value', this.get('$inputElement').typeahead('val'));
+    this._setValue(this.getTypeaheadValue());
   },
 
   typeaheadOpenTriggered: null,
   typeaheadCloseTriggered: null,
   typeaheadChangeTriggered: null,
   typeaheadRenderTriggered: null,
-  typeaheadAutoCompleteTriggered: null,
+
+  typeaheadSelectTriggered: function (evt, object) {
+    this._setValue(object, true);
+  },
+
   typeaheadCursorChangeTriggered: null,
   typeaheadAsyncRequestTriggered: null,
   typeaheadAsyncCancelTriggered: null,
@@ -120,13 +136,26 @@ export default Ember.Component.extend({
     return !!(item.match(regexp));
   },
 
-  retrieveResults: function (query, syncResultsCallback) {
+  formatDisplay: function (obj) {
+    var ret = '';
+
+    if (obj) {
+      ret = this.get('displayKey') ? Ember.get(obj, this.get('displayKey')) : obj;
+    }
+
+    return ret;
+  },
+
+  defaultRetrieveResults: function (query, syncResultsCallback) {
     var results = [];
     var content = this.get('content');
+    var displayKey = this.get('displayKey');
 
     if (content) {
       Ember.$.each(content, (i, item) => {
-        if (this.itemMatchesQuery(query, item)) {
+        let value = displayKey ? Ember.get(item, displayKey) : item;
+
+        if (this.itemMatchesQuery(query, value)) {
           results.push(item);
         }
       });
@@ -135,16 +164,48 @@ export default Ember.Component.extend({
     syncResultsCallback(results);
   },
 
-  $inputElement: Ember.computed({
-    get: function () {
-      return this.$('input');
+  customRetrieveResults: function (query, syncResultsCallback, asyncResultsCallback) {
+    this.sendAction('onRetrieveResults', query, syncResultsCallback, asyncResultsCallback);
+  },
+
+  _setValue: function (value, isFromSelect=false) {
+    if (this.get('onSelectValue')) {
+      this.customSetValue(value, isFromSelect);
+    } else {
+      this.defaultSetValue(value, isFromSelect);
     }
-  }),
+  },
+
+  defaultSetValue: function (value) {
+    this.set('value', value);
+  },
+
+  customSetValue: function (value, isFromSelect) {
+    var typedValue;
+    var selectedValue;
+
+    this.set('value', value);
+
+    if (isFromSelect) {
+      selectedValue = value;
+      typedValue = this.getTypeaheadValue();
+    } else {
+      typedValue = value;
+    }
+
+    this.sendAction('onSelectValue', typedValue, selectedValue);
+  },
+
+  $inputElement: null,
+
+  getTypeaheadValue: function () {
+    return this.get('$inputElement').typeahead('val');
+  },
 
   _initializeElement: Ember.on('didInsertElement', function () {
-    let $input = this.get('$inputElement');
+    this.set('$inputElement', this.$('input'));
 
-    $input.typeahead(
+    this.get('$inputElement').typeahead(
       {
         hint: this.get('hint'),
         highlight: this.get('highlight'),
@@ -153,13 +214,22 @@ export default Ember.Component.extend({
           input: this.get('inputClass') || undefined,           // This undefined keeps twitter typeahead from not
           hint: this.get('hintClass') || undefined,             // using the default class
           menu: this.get('menuClass') || undefined,
-          dataset: this.get('datasetClass') || undefined
+          dataset: this.get('datasetClass') || undefined,
+          suggestion: this.get('suggestionClass') || undefined
         }
       },
       {
+        display: Ember.run.bind(this, this.formatDisplay),
         limit: this.get('limit'),
         name: this.get('name'),
-        source: Ember.run.bind(this, this.retrieveResults)
+        source: this.get('onRetrieveResults') ? Ember.run.bind(this, this.customRetrieveResults) : Ember.run.bind(this, this.defaultRetrieveResults),
+        templates: {
+          footer: this.get('footerTemplateFunction') || undefined,
+          header: this.get('headerTemplateFunction') || undefined,
+          notFound: this.get('notFoundTemplateFunction') || undefined,
+          pending: this.get('pendingTemplateFunction') || undefined,
+          suggestion: this.get('suggestionTemplateFunction') || undefined
+        }
       }
     );
 
@@ -173,15 +243,16 @@ export default Ember.Component.extend({
       let handlerFunction = this.get(functionName);
 
       if (handlerFunction) {
-        $input.bind(eventName, Ember.run.bind(this, handlerFunction));
+        this.get('$inputElement').bind(eventName, Ember.run.bind(this, handlerFunction));
       }
     }
 
-    let value = this.get('value');
+    this._valueChanged();
+  }),
 
-    if (value) {
-      $input.typeahead('val', value);
-    }
+  _teardownElement: Ember.on('willDestroyElement', function () {
+    this.get('$inputElement').typeahead('destroy');
+    this.set('$inputElement', null);
   }),
 
   concatenatedProperties: ['inputClassNames', 'customEventMap']
