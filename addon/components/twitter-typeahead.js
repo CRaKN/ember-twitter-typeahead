@@ -10,6 +10,8 @@ export default Ember.Component.extend({
 
   // This is the Ember-style object value
   value: null,
+  initialValue: null,
+  _isValueInitialized: false,
 
   // This is the Typeahead-style string value
   _valueChanged: function () {
@@ -20,6 +22,17 @@ export default Ember.Component.extend({
       $inputElement.typeahead('val', displayValue);
     }
   }.observes('value'),
+
+  _initialValueChanged: function () {
+    let displayValue = this.formatDisplay(this.get('initialValue'));
+    let $inputElement = this.get('$inputElement');
+
+    if ($inputElement) {
+      $inputElement.typeahead('val', displayValue);
+    }
+
+    this.set('_isValueInitialized', true);
+  }.observes('initialValue'),
 
   clearValue: function () {
     this.set('lastAutocompleteSuggestion', null);
@@ -184,8 +197,6 @@ export default Ember.Component.extend({
     var typedValue;
     var selectedValue;
 
-    this.set('value', value);
-
     if (isFromSelect) {
       selectedValue = value;
       typedValue = this.getTypeaheadValue();
@@ -245,6 +256,10 @@ export default Ember.Component.extend({
       if (handlerFunction) {
         this.get('$inputElement').bind(eventName, Ember.run.bind(this, handlerFunction));
       }
+    }
+
+    if (!this.get('_isValueInitialized')) {
+      this._initialValueChanged();
     }
 
     this._valueChanged();
