@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/CRaKN/ember-twitter-typeahead/badges/gpa.svg)](https://codeclimate.com/github/CRaKN/ember-twitter-typeahead)
+
 # ember-twitter-typeahead
 
 This Ember addon wraps the [typeahead.js](https://github.com/twitter/typeahead.js) library to make it available as
