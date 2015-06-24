@@ -7,6 +7,7 @@ export default Ember.Component.extend({
   content: null,
   inputClassNames: null,
   displayKey: null,
+  placeholder: null,
 
   // This is the Ember-style object value
   value: null,
