@@ -60,7 +60,7 @@ describeComponent(
         };
 
         component.content = states;
-        component.retrieveResults('x', synchronousCallback);
+        component.defaultRetrieveResults('x', synchronousCallback);
 
         expect(results.length).to.eq(2);
         expect(results).to.include.members(['New Mexico', 'Texas']);

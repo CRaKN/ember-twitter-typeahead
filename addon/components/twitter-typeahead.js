@@ -13,14 +13,14 @@ export default Ember.Component.extend({
   value: null,
 
   // This is the Typeahead-style string value
-  _valueChanged: function () {
+  _valueChanged: Ember.observer('value', function () {
     let displayValue = this.formatDisplay(this.get('value'));
     let $inputElement = this.get('$inputElement');
 
     if ($inputElement) {
       $inputElement.typeahead('val', displayValue);
     }
-  }.observes('value'),
+  }),
 
   clearValue: function () {
     this.set('lastAutocompleteSuggestion', null);
