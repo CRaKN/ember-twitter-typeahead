@@ -23,6 +23,10 @@ export default Ember.Component.extend({
   }),
 
   clearValue: function () {
+    if(!this.set) {
+      return;
+    }
+
     this.set('lastAutocompleteSuggestion', null);
     this.set('value', null);
     this._valueChanged();
