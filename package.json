@@ -34,7 +34,8 @@
     "ember-disable-proxy-controllers": "^1.0.1",
     "ember-export-application-global": "^1.0.2",
     "ember-inflector": "1.9.4",
-    "ember-try": "0.0.8"
+    "ember-try": "0.0.8",
+    "loader.js": "~3.3.0"
   },
   "keywords": [
     "ember-addon",
