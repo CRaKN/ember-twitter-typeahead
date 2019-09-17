@@ -1,3 +1,1 @@
-import TwitterTypeahead from 'ember-twitter-typeahead/components/twitter-typeahead';
-
-export default TwitterTypeahead;
+export { default } from 'ember-twitter-typeahead2/components/twitter-typeahead';

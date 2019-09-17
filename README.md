@@ -1,39 +1,50 @@
-[![Codeship Status for CRaKN/ember-twitter-typeahead](https://codeship.com/projects/0a0e1c70-ed1e-0132-671e-12bad8466ed3/status?branch=master)](https://codeship.com/projects/83927)
-[![Code Climate](https://codeclimate.com/github/CRaKN/ember-twitter-typeahead/badges/gpa.svg)](https://codeclimate.com/github/CRaKN/ember-twitter-typeahead)
-# ember-twitter-typeahead
+ember-twitter-typeahead2
+==============================================================================
 
-This Ember addon wraps the [typeahead.js](https://github.com/twitter/typeahead.js) library to make it available as
-an extensible component in an Ember application.
+[Short description of the addon.]
 
-# Contributing
+Installation
+------------------------------------------------------------------------------
 
-## Installation
+```
+ember install ember-twitter-typeahead2
+```
 
-* `git clone` this repository
+
+Usage
+------------------------------------------------------------------------------
+
+[Longer description of how to use the addon in apps.]
+
+
+Contributing
+------------------------------------------------------------------------------
+
+### Installation
+
+* `git clone <repository-url>`
+* `cd ember-twitter-typeahead2`
 * `npm install`
-* `bower install`
 
-## Running
+### Linting
 
-* `ember server`
-* Visit your app at http://localhost:4200.
+* `npm run lint:js`
+* `npm run lint:js -- --fix`
 
-## Tests
+### Running tests
 
-Add unit tests that go along with any pull requests made. We are using the Mocha framework for Ember to test
-this addon. To run the tests, use the commands
+* `ember test` – Runs the test suite on the current Ember version
+* `ember test --server` – Runs the test suite in "watch mode"
+* `ember try:each` – Runs the test suite against multiple Ember versions
 
-* `ember test`
-* `ember test --server`
+### Running the dummy application
 
-## Building
+* `ember serve`
+* Visit the dummy application at [http://localhost:4200](http://localhost:4200).
 
-* `ember build`
+For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
 
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+License
+------------------------------------------------------------------------------
 
-# License
-
-Copyright 2015 CRäKN, LLC
-
-Licensed under the MIT License
+This project is licensed under the [MIT License](LICENSE.md).

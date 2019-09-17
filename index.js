@@ -1,12 +1,11 @@
-/* jshint node: true */
 'use strict';
 
 module.exports = {
-  name: 'ember-twitter-typeahead',
+  name: 'ember-twitter-typeahead2',
 
   included: function(app) {
     this._super.included(app);
 
-    app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.jquery.min.js');
+    app.import('node_modules/typeahead.js/dist/typeahead.jquery.min.js');
   }
 };

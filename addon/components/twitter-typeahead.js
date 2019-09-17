@@ -1,6 +1,15 @@
-import Ember from 'ember';
+/* eslint-disable ember/avoid-leaking-state-in-ember-objects */
+/* eslint-disable ember/no-on-calls-in-components */
+/* eslint-disable ember/closure-actions */
+import Component from '@ember/component';
+import { observer, get } from '@ember/object';
+import { on } from '@ember/object/evented';
+import { bind } from '@ember/runloop';
+import $ from 'jquery';
 
-export default Ember.Component.extend({
+// import layout from '../templates/components/twitter-typeahead';
+
+export default Component.extend({
   classNames: ['twitter-typeahead'],
 
   // --- Component parameters -------------------------------------------------
@@ -13,7 +22,7 @@ export default Ember.Component.extend({
   value: null,
 
   // This is the Typeahead-style string value
-  _valueChanged: Ember.observer('value', function () {
+  _valueChanged: observer('value', function () {
     let displayValue = this.formatDisplay(this.get('value'));
     let $inputElement = this.get('$inputElement');
 
@@ -145,7 +154,7 @@ export default Ember.Component.extend({
     var ret = '';
 
     if (obj) {
-      ret = this.get('displayKey') ? Ember.get(obj, this.get('displayKey')) : obj;
+      ret = this.get('displayKey') ? get(obj, this.get('displayKey')) : obj;
     }
 
     return ret;
@@ -157,8 +166,8 @@ export default Ember.Component.extend({
     var displayKey = this.get('displayKey');
 
     if (content) {
-      Ember.$.each(content, (i, item) => {
-        let value = displayKey ? Ember.get(item, displayKey) : item;
+      $.each(content, (i, item) => {
+        let value = displayKey ? get(item, displayKey) : item;
 
         if (this.itemMatchesQuery(query, value)) {
           results.push(item);
@@ -205,7 +214,7 @@ export default Ember.Component.extend({
     return this.get('$inputElement').typeahead('val');
   },
 
-  _initializeElement: Ember.on('didInsertElement', function () {
+  _initializeElement: on('didInsertElement', function () {
     this.set('$inputElement', this.$('input'));
 
     this.get('$inputElement').typeahead(
@@ -222,10 +231,10 @@ export default Ember.Component.extend({
         }
       },
       {
-        display: Ember.run.bind(this, this.formatDisplay),
+        display: bind(this, this.formatDisplay),
         limit: this.get('limit'),
         name: this.get('name'),
-        source: this.get('onRetrieveResults') ? Ember.run.bind(this, this.customRetrieveResults) : Ember.run.bind(this, this.defaultRetrieveResults),
+        source: this.get('onRetrieveResults') ? bind(this, this.customRetrieveResults) : bind(this, this.defaultRetrieveResults),
         templates: {
           footer: this.get('footerTemplateFunction') || undefined,
           header: this.get('headerTemplateFunction') || undefined,
@@ -246,14 +255,14 @@ export default Ember.Component.extend({
       let handlerFunction = this.get(functionName);
 
       if (handlerFunction) {
-        this.get('$inputElement').bind(eventName, Ember.run.bind(this, handlerFunction));
+        this.get('$inputElement').bind(eventName, bind(this, handlerFunction));
       }
     }
 
     this._valueChanged();
   }),
 
-  _teardownElement: Ember.on('willDestroyElement', function () {
+  _teardownElement: on('willDestroyElement', function () {
     this.get('$inputElement').typeahead('destroy');
     this.set('$inputElement', null);
   }),
