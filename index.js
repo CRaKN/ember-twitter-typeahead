@@ -7,6 +7,6 @@ module.exports = {
   included: function(app) {
     this._super.included(app);
 
-    app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.jquery.min.js');
+    app.import('vendor/typeahead.js/typeahead.jquery.min.js');
   }
 };
